@@ -1,18 +1,19 @@
-# Use an official Python image as base
+# Use an official Python image
 FROM python:3.9  
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app  
 
-# Copy all files from the current directory to /app
+# Copy the project files
 COPY . /app  
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt  
+# Create a virtual environment and install dependencies
+RUN python -m venv venv && \
+    . venv/bin/activate && \
+    pip install --no-cache-dir -r requirements.txt  
 
-# Expose port 5000 for Flask
+# Expose the port Flask will run on
 EXPOSE 5000  
 
-# Start the Flask app using Gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
- 
+# Start the Flask app using Gunicorn inside the virtual environment
+CMD ["sh", "-c", ". venv/bin/activate && gunicorn -b 0.0.0.0:5000 app:app"]
